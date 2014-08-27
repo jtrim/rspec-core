@@ -10,7 +10,11 @@ if [ -f script/custom_build_functions.sh ]; then
   source script/custom_build_functions.sh
 fi
 
-run_specs_and_record_done
+if is_mri_192; then
+  echo "Skipping specs for rspec-core due to consistent segfaults on 1.9.2."
+else
+  run_specs_and_record_done
+fi
 run_cukes
 
 if documentation_enforced; then
