@@ -21,6 +21,38 @@ module RSpec
         end
 
       end
+
+      describe "#ascend_until" do
+        subject { RubyProject }
+
+        it "works with a normal path" do
+          allow(File).to receive(:expand_path).with(".").and_return("/var/ponies")
+          expect { |b|
+            subject.ascend_until(&b)
+          }.to yield_successive_args("/var/ponies", "/var", "/")
+        end
+
+        it "works with a path with a trailing slash" do
+          allow(File).to receive(:expand_path).with(".").and_return("/var/ponies/")
+          expect { |b|
+            subject.ascend_until(&b)
+          }.to yield_successive_args("/var/ponies", "/var", "/")
+        end
+
+        it "works with a path with double slashes" do
+          allow(File).to receive(:expand_path).with(".").and_return("/var//ponies/")
+          expect { |b|
+            subject.ascend_until(&b)
+          }.to yield_successive_args("/var/ponies", "/var", "/")
+        end
+
+        xit "works with a path with escaped slashes" do
+          allow(File).to receive(:expand_path).with(".").and_return("/var\/ponies/")
+          expect { |b|
+            subject.ascend_until(&b)
+          }.to yield_successive_args("/var\/ponies", "/")
+        end
+      end
     end
   end
 end

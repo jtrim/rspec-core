@@ -26,9 +26,10 @@ module RSpec
       end
 
       def ascend_until
-        parts = File.expand_path(".").split(File::SEPARATOR)
+        parts = File.expand_path(".").squeeze("/").split(File::SEPARATOR)
         until parts.empty?
           path = parts.join(File::SEPARATOR)
+          path = "/" if path == ""
           return path if yield(path)
           parts.pop
         end
