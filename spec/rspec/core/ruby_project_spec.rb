@@ -25,6 +25,10 @@ module RSpec
       describe "#ascend_until" do
         subject { RubyProject }
 
+        before do
+          allow(File).to receive(:expand_path).and_call_original
+        end
+
         it "works with a normal path" do
           allow(File).to receive(:expand_path).with(".").and_return("/var/ponies")
           expect { |b|
