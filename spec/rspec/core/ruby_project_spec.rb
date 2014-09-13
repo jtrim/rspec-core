@@ -29,32 +29,27 @@ module RSpec
           allow(File).to receive(:expand_path).and_call_original
         end
 
+        def expect_ascend(source_path, *yielded_paths)
+          allow(File).to receive(:expand_path).with('.') { source_path }
+          expect { |probe|
+            subject.ascend_until(&probe)
+          }.to yield_successive_args(*yielded_paths)
+        end
+
         it "works with a normal path" do
-          allow(File).to receive(:expand_path).with(".").and_return("/var/ponies")
-          expect { |b|
-            subject.ascend_until(&b)
-          }.to yield_successive_args("/var/ponies", "/var", "/")
+          expect_ascend("/var//ponies/", "/var/ponies", "/var", "/")
         end
 
         it "works with a path with a trailing slash" do
-          allow(File).to receive(:expand_path).with(".").and_return("/var/ponies/")
-          expect { |b|
-            subject.ascend_until(&b)
-          }.to yield_successive_args("/var/ponies", "/var", "/")
+          expect_ascend("/var//ponies/", "/var/ponies", "/var", "/")
         end
 
         it "works with a path with double slashes" do
-          allow(File).to receive(:expand_path).with(".").and_return("/var//ponies/")
-          expect { |b|
-            subject.ascend_until(&b)
-          }.to yield_successive_args("/var/ponies", "/var", "/")
+          expect_ascend("/var//ponies/", "/var/ponies", "/var", "/")
         end
 
         xit "works with a path with escaped slashes" do
-          allow(File).to receive(:expand_path).with(".").and_return("/var\/ponies/")
-          expect { |b|
-            subject.ascend_until(&b)
-          }.to yield_successive_args("/var\/ponies", "/")
+          expect_ascend("/var\/ponies/", "/var\/ponies", "/")
         end
       end
     end
